@@ -20,7 +20,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # 변경: 바로 push하지 않고 러너 안에만 이미지 생성
       - name: Build image (load only)
         uses: docker/build-push-action@v6
         with:
@@ -28,22 +27,14 @@ jobs:
           load: true
           tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
-      # 추가: 내 이미지(nginx:alpine 기반) 스캔
-      - name: Trivy scan - my image (alpine)
+      # 변경: 보고 모드 → 게이트 모드 (CRITICAL 있으면 실패)
+      - name: Trivy gate (block CRITICAL)
         run: |
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
             aquasec/trivy:latest image \
-            --scanners vuln --severity HIGH,CRITICAL --exit-code 0 --no-progress \
+            --scanners vuln --severity CRITICAL --exit-code 1 --no-progress \
             ghcr.io/${{ github.repository }}:${{ github.sha }}
 
-      # 추가: 비교용 - 일반 nginx(Debian 기반) 스캔
-      - name: Trivy scan - compare (nginx debian)
-        run: |
-          docker run --rm aquasec/trivy:latest image \
-            --scanners vuln --severity HIGH,CRITICAL --exit-code 0 --no-progress \
-            nginx:latest
-
-      # 변경: 검사 후 push
       - name: Push image
         run: docker push ghcr.io/${{ github.repository }}:${{ github.sha }}
 
