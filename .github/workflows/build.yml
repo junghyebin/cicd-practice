@@ -46,3 +46,24 @@ jobs:
           git add manifest.txt
           git commit -m "Update manifest to ${{ github.sha }}"
           git push
+          
+      # 테스트 5: Python 베이스 이미지 비교 (보고 모드, 메인 흐름에 영향 없음)
+      - name: Compare - pull & size
+        run: |
+          docker pull -q python:3.13-alpine
+          docker pull -q python:3.13-slim
+          docker images --format "table {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep python
+
+      - name: Compare - Trivy python alpine
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:latest image \
+            --scanners vuln --severity HIGH,CRITICAL --exit-code 0 --no-progress \
+            python:3.13-alpine
+
+      - name: Compare - Trivy python slim
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:latest image \
+            --scanners vuln --severity HIGH,CRITICAL --exit-code 0 --no-progress \
+            python:3.13-slim
