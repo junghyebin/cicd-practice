@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 jobs:
@@ -25,3 +25,11 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
+      - name: Update manifest (loop test)
+        run: |
+          echo "image: ghcr.io/${{ github.repository }}:${{ github.sha }}" > manifest.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add manifest.txt
+          git commit -m "Update manifest to ${{ github.sha }}"
+          git push
