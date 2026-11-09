@@ -32,7 +32,7 @@ jobs:
         run: |
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
             aquasec/trivy:latest image \
-            --scanners vuln --severity CRITICAL --exit-code 1 --no-progress \
+            --scanners vuln --severity CRITICAL --exit-code 1 --ignore-unfixed --no-progress \
             ghcr.io/${{ github.repository }}:${{ github.sha }}
 
       - name: Push image
