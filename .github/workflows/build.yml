@@ -54,9 +54,11 @@ jobs:
 
       - name: Update manifest
         run: |
-          echo "image: $IMAGE" > manifest.txt
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # 먼저 최신 main을 받고, 그 위에서 파일을 써야 내용 충돌이 안 남
+          git pull --rebase origin main
+          echo "image: $IMAGE" > manifest.txt
           git add manifest.txt
           git commit -m "Update manifest to ${{ github.sha }}"
           git push
