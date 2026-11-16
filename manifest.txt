@@ -1,1 +1,1 @@
-image: ghcr.io/junghyebin/cicd-practice:c6cf19afca6cd5eddc538358c6148fe2a5110076
+image: ghcr.io/junghyebin/cicd-practice:1e00585cb947c8f92616891943df46aa5a6bc867
