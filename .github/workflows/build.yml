@@ -8,6 +8,10 @@ permissions:
   contents: write
   packages: write
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
   TRIVY: aquasec/trivy:0.76.0
